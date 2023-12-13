@@ -1,13 +1,23 @@
 package cz.secda1.spsmb.javaDates;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.chrono.ChronoLocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-public class DateTimeUtils {
+import java.util.stream.Collectors;
 
+public class DateTimeUtils {
     /**
      * Vypište aktuální datum ve formátu den.měsíc.rok hodina:minuta (např. 12.12.2023 14:41)
      *
@@ -15,17 +25,19 @@ public class DateTimeUtils {
      * @return String s naformátovaným datem
      */
     public static String formattedDate(LocalDateTime date) {
-        return null;
+        DateTimeFormatter dateFormat= DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return date.format(dateFormat);
     }
 
     /**
-     * Naparsujte datum "03.11.2023" pomocí parseru se zadaným fromátem. Správný zápis formátu můžete vyhledat.
+     * Naparsujte datum "13.11.2023" pomocí parseru se zadaným formátem. Správný zápis formátu můžete vyhledat.
      *
      * @param dateString String ze kterého vyrobíme datum (LocalDate)
      * @return
      */
     public static LocalDate parseDate(String dateString) {
-        return null;
+        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return date;
     }
 
     /**
@@ -35,7 +47,9 @@ public class DateTimeUtils {
      * @return vložené datum s časem 12:00
      */
     public static String atMoonTime(LocalDate date) {
-        return null;
+        LocalDateTime date2 = date.atTime(0, 0);
+        date2 = date2.plus(12, ChronoUnit.HOURS);
+        return date2.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 
     /**
@@ -46,12 +60,12 @@ public class DateTimeUtils {
      */
     public static String whatsTheDateToday(LocalDate today) {
         //dopolňte do proměnné dayOfWeek den v týdnu.
-        DayOfWeek dayOfWeek = null;
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
 
         String dayNameInCzech = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
 
         //Sestavte message "Dnes je <dayNameInCzech>." pomocí String.format()
-        String formattedMessage = null;
+        String formattedMessage = String.format("Dnes je %s.", dayNameInCzech);
         return formattedMessage;
     }
 
@@ -65,7 +79,10 @@ public class DateTimeUtils {
      * @return String message
      */
     public static String daysToChristmas() {
-        return null;
+        LocalDate vanoce = LocalDate.of(2023, 12, 24);
+        LocalDate dateNow = LocalDate.now();
+        Long days = ChronoUnit.DAYS.between(dateNow, vanoce);
+        return String.format("Do Vánoc zbývá %s dní.", days);
     }
 
     /**
@@ -81,7 +98,16 @@ public class DateTimeUtils {
      * @return List<LocalDate> s oběma seřazenými datumy
      */
     public static List<LocalDate> smallerFirst(LocalDate start, LocalDate end){
-        return null;
+        List<LocalDate> listWithDates = new ArrayList<>();
+        int x = start.compareTo(end);
+        if (x < 0){
+            listWithDates.add(start);
+            listWithDates.add(end);
+        }else{
+            listWithDates.add(end);
+            listWithDates.add(start);
+        }
+        return listWithDates;
     }
 
     /**
@@ -90,7 +116,14 @@ public class DateTimeUtils {
      * @return první pondělí po Vánocích (LocalDate)
      */
     public static LocalDate firstMondayAfterChristmas(){
-        return null;
+        LocalDate vanoce = LocalDate.of(2023, 12, 24);
+
+        DayOfWeek vanoceDay = vanoce.getDayOfWeek();
+        while(!vanoceDay.equals(DayOfWeek.MONDAY)){
+            vanoce = vanoce.plus(1, ChronoUnit.DAYS);
+            vanoceDay = vanoce.getDayOfWeek();
+        }
+        return vanoce;
     }
 
 }
